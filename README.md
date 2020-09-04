@@ -4,7 +4,7 @@ This repository contains an implementation of an unspervised adverserial framewo
 ## Table of contents
 * [Generator](#generator)
 * [Augmenter](#augmenter)
-* [Usage] (#usage)
+* [Usage](#usage)
 
 ## Generator
 combining a variational autoencoder (VAE) with a generative adversarial network (GAN), we introduce a VAE-GAN netowrk that leverages unsupervised representation learning and data sample reconstruction.
