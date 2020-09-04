@@ -12,8 +12,3 @@ combining a variational autoencoder (VAE) with a generative adversarial network 
 ## Augmenter
 Given the adversarial training proposed for GANs, here we introduce an augmentation network thatgenerates multiple nonidentical augmented samples with identical class labels, called U-DAGAN.
 
-Schematic of the proposed architecture for unsupervised data augmentation,
-https://github.com/AllenInstitute/U-DAGAN/blob/master/figures/augmenter.png
-
-and the augmenter's architecture.
-https://github.com/AllenInstitute/U-DAGAN/blob/master/figures/udagan.png
