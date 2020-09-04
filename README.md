@@ -10,6 +10,7 @@ This repository contains an implementation of an unspervised adverserial framewo
 combining a variational autoencoder (VAE) with a generative adversarial network (GAN), we introduce a VAE-GAN netowrk that leverages unsupervised representation learning and data sample reconstruction.
 
 The network architecture for the developed VAE-GAN.
+<p align="center">
 <img src="figures/vaegan.png" width="500">
 	
 ## Augmenter
@@ -21,11 +22,14 @@ The schematic of the proposed architecture for unsupervised data augmentation an
 
 ### Example
 #### MNIST
+<p align="center">
 <img src="figures/mnist_augmented_sample.png" width="800">
 
 #### snRNA-seq (FACS)
+<p align="center">
 <img src="figures/sc_lowD_feature_space.png" width="800">
 
+<p align="center">
 <img src="figures/sc_gene_82.png" width="800">
 
 ## Usage
