@@ -20,6 +20,7 @@ The schematic of the proposed architecture for unsupervised data augmentation an
 ### Example
 #### MNIST
 <img src="figures/mnist_augmented_sample.png" width="800">
+
 #### snRNA-seq (FACS)
 <img src="figures/sc_lowD_feature_space.png" width="800">
 
