@@ -1,6 +1,6 @@
 import torch.optim as optim
 import matplotlib.pyplot as plt
-import time, torch
+import time, os
 from module.udagan import *
 from module.dataloader import get_data
 from module.utils import *
@@ -13,15 +13,18 @@ def train_udagan(parameters, device):
                               file_path=parameters['dataset_path'],
                               n_feature=parameters['n_features'])
 
+    saving_path = os.path.abspath(os.path.join(os.getcwd(), '..'))
+    saving_path += '/results/augmenter'
+
     if parameters['dataset'] == 'MNIST':
         netA = Augmenter_mnist(noise_dim=parameters['num_n'],
                          latent_dim=parameters['num_z']).to(device)
         netD = Discriminator_mnist().to(device)
 
-        saving_path = './results/mnist/'
+        saving_path += '/mnist/'
 
 
-    elif parameters['dataset'] == 'FACSy':
+    elif parameters['dataset'] == 'FACS':
         netA = Augmenter_facs(noise_dim=parameters['num_n'],
                               latent_dim=parameters['num_z'],
                               input_dim=parameters['n_features']).to(device)
@@ -29,7 +32,7 @@ def train_udagan(parameters, device):
         netD = Discriminator_facs(input_dim=parameters['n_features']).to(device)
         netD.apply(weights_init)
 
-        saving_path = './results/facs/'
+        saving_path = '/scRNA/'
 
     if parameters['initial_w']:
         netA.apply(weights_init)
@@ -238,11 +241,15 @@ def train_vaegan(parameters, device):
                               training=True,
                               remove_nonneuron=parameters['remove_nonneuron'],
                               remove_CR_Meis2=parameters['remove_CR_Meis2'])
+
+    saving_path = os.path.abspath(os.path.join(os.getcwd(), '..'))
+    saving_path += '/results/generator'
+
     if parameters['dataset'] == 'MNIST':
         netG = Generator_mnist(latent_dim=parameters['num_z']).to(device)
         netD = Discriminator_mnist().to(device)
 
-        saving_path = './results/mnist/'
+        saving_path += '/mnist/'
 
 
     elif parameters['dataset'] == 'FACS':
@@ -252,7 +259,7 @@ def train_vaegan(parameters, device):
         netD = Discriminator_facs(input_dim=parameters['n_features']).to(device)
         netD.apply(weights_init)
 
-        saving_path = './results/facs/'
+        saving_path += '/scRNA/'
 
     if parameters['initial_w']:
         netG.apply(weights_init)
@@ -341,19 +348,12 @@ def train_vaegan(parameters, device):
                 label = torch.full((b_size,), real_label, device=device)
                 _, probs_real = netD(real_data_bin)
                 loss_real = criterionD(probs_real.view(-1), label)
-                # if F.relu(loss_real - np.log(2)) > 0:
-                #     loss_r = loss_real
-                # else:
-                #     loss_r = F.relu(loss_real - np.log(2))
-                #
-                # loss_r.backward()
-                if epoch > 500:
+
+                if F.relu(loss_real - np.log(2)) > 0:
                     loss_real.backward()
                     optim_D = True
                 else:
                     optim_D = False
-
-                # loss_r.backward()
 
                 # Augmented samples
                 label.fill_(fake_label)
@@ -368,7 +368,6 @@ def train_vaegan(parameters, device):
                     loss_fake.backward()
                     optim_D = True
 
-                # loss_f.backward()
                 # Loss value for the discriminator
                 D_loss = loss_real + loss_fake
 
@@ -414,7 +413,7 @@ def train_vaegan(parameters, device):
             'optimD': optimD.state_dict(),
             'optimG': optimG.state_dict(),
             'parameters': parameters
-            }, saving_path + 'modelG_bs_%d_dn_%d_dz_%d_lambda'
+            }, saving_path + 'modelG_bs_%d_dn_%d_dz_%d'
                %(parameters['batch_size'], parameters['num_z'], parameters[
             'num_epochs']))
 
