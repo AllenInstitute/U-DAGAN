@@ -9,9 +9,10 @@ parameters = {'batch_size': 1000,  # batch size
             'num_epochs': 1000,  # number of epochs
             'learning_rate': 0.5e-4, # learning rate
             'num_z': 10, # latent space dimension
-            'lambda': [2, 0., 0., 0.5], # weights of the augmenter loss
+            'lambda': [2, 0., 0., 0.1], # weights of the augmenter loss
             'dataset': 'FACS', # dataset, i.e. {'MNIST', 'FACS'}
-            'dataset_file': 'Mouse-V1-ALM-20180520_cpmtop10k_cpm_withCL.mat',
+            'dataset_file': '/home/yeganeh/github/U-DAGAN/data/scRNA/Mouse-V1'
+                            '-ALM-20180520_cpmtop10k_cpm_withCL.mat',
             'n_features': 5000,
             'n_smp': 20, # number of generated samples
             'remove_nonneuron': 'True', # remove non-neuronal cells
