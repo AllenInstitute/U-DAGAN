@@ -349,7 +349,7 @@ def train_vaegan(parameters, device):
                 _, probs_real = netD(real_data_bin)
                 loss_real = criterionD(probs_real.view(-1), label)
 
-                if F.relu(loss_real - np.log(2)) > 0:
+                if F.relu(loss_real - np.log(2)/2) > 0:
                     loss_real.backward()
                     optim_D = True
                 else:
@@ -364,7 +364,7 @@ def train_vaegan(parameters, device):
                 _, probs_fake = netD(fake_data_bin.detach())
                 loss_fake = criterionD(probs_fake.view(-1), label)
 
-                if F.relu(loss_fake - np.log(2)) > 0:
+                if F.relu(loss_fake - np.log(2)/2) > 0:
                     loss_fake.backward()
                     optim_D = True
 
