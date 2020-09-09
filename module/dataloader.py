@@ -6,20 +6,19 @@ import scipy.io as sio
 import numpy as np
 
 # Directory containing the data.
-root = './data/'
 
 def get_data(dataset, batch_size, file, n_feature, training=True,
              remove_nonneuron=True, remove_CR_Meis2=False):
 
     # Get MNIST dataset.
     if dataset == 'MNIST':
-        tensor_data = dsets.MNIST(root + 'mnist/', train='train',
+        tensor_data = dsets.MNIST(file, train='train',
                                 download=True, transform=transforms.ToTensor())
         data = []
 
-    if dataset == 'FACSy':
+    if dataset == 'FACS':
         # load the cells data .mat file
-        data = sio.loadmat(root + 'facs/' + file, squeeze_me=True)
+        data = sio.loadmat(file, squeeze_me=True)
         # remove measurement labeled "Low Quality"
         ind = np.where((data['class_label'] == 'Low Quality'))
         ref_len = len(data['class_label'])
@@ -52,7 +51,14 @@ def get_data(dataset, batch_size, file, n_feature, training=True,
                 if len(data[key]) >= ref_len:
                     data[key] = np.delete(data[key], ind, axis=0)
 
-        data_cpm = data['log1p'][:, :n_feature]
+        data_cpm = data['log1p']
+        gene_indx = []
+        for i in range(data_cpm.shape[1]):
+            indx = np.where(data_cpm[:, i] == 0.)[0]
+            if len(indx) > (data_cpm.shape[0] * 0.05):
+                gene_indx.append(i)
+        gene_indx = np.array(gene_indx)
+        data_cpm = data_cpm[:, gene_indx[:n_feature]]
         data_cpm_bin = np.copy(data_cpm)
         data_cpm_bin[data_cpm_bin > 0] = 1
         # data_cpm_norm = data_cpm / np.expand_dims(max_exp, axis=1).repeat(
