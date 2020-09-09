@@ -57,7 +57,7 @@ def get_data(dataset, batch_size, file, n_feature, training=True,
         remove_indx = []
         for i in range(data_cpm.shape[1]):
             indx = np.where(data_cpm[:, i] > 0.)[0]
-            if len(indx) > (data_cpm.shape[0] * 0.05):
+            if len(indx) > (data_cpm.shape[0] * 0.5):
                 keep_indx.append(i)
             else:
                 remove_indx.append(i)
