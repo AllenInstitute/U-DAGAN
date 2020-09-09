@@ -52,13 +52,20 @@ def get_data(dataset, batch_size, file, n_feature, training=True,
                     data[key] = np.delete(data[key], ind, axis=0)
 
         data_cpm = data['log1p']
-        gene_indx = []
+        data['gene_id_new'] = data['gene_id']
+        keep_indx = []
+        remove_indx = []
         for i in range(data_cpm.shape[1]):
-            indx = np.where(data_cpm[:, i] == 0.)[0]
+            indx = np.where(data_cpm[:, i] > 0.)[0]
             if len(indx) > (data_cpm.shape[0] * 0.05):
-                gene_indx.append(i)
-        gene_indx = np.array(gene_indx)
-        data_cpm = data_cpm[:, gene_indx[:n_feature]]
+                keep_indx.append(i)
+            else:
+                remove_indx.append(i)
+
+        keep_indx = np.array(keep_indx)
+        remove_indx = np.array(remove_indx)
+        data['gene_id_new'] = np.delete(data['gene_id_new'], remove_indx, axis=0)
+        data_cpm = data_cpm[:, keep_indx[:n_feature]]
         data_cpm_bin = np.copy(data_cpm)
         data_cpm_bin[data_cpm_bin > 0] = 1
         # data_cpm_norm = data_cpm / np.expand_dims(max_exp, axis=1).repeat(
