@@ -7,11 +7,13 @@ from module.utils import *
 
 
 def train_udagan(parameters, device):
-
     dataloader, _ = get_data(dataset=parameters['dataset'],
-                              batch_size=parameters['batch_size'],
-                              file_path=parameters['dataset_path'],
-                              n_feature=parameters['n_features'])
+                             batch_size=parameters['batch_size'],
+                             file=parameters['dataset_file'],
+                             n_feature=parameters['n_features'],
+                             training=True,
+                             remove_nonneuron=parameters['remove_nonneuron'],
+                             remove_CR_Meis2=parameters['remove_CR_Meis2'])
 
     saving_path = os.path.abspath(os.path.join(os.getcwd(), '..'))
     saving_path += '/results/augmenter'
