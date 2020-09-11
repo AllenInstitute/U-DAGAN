@@ -10,10 +10,7 @@ def train_udagan(parameters, device):
     dataloader, _ = get_data(dataset=parameters['dataset'],
                              batch_size=parameters['batch_size'],
                              file=parameters['dataset_file'],
-                             n_feature=parameters['n_features'],
-                             training=True,
-                             remove_nonneuron=parameters['remove_nonneuron'],
-                             remove_CR_Meis2=parameters['remove_CR_Meis2'])
+                             n_feature=parameters['n_features'])
 
     saving_path = os.path.abspath(os.path.join(os.getcwd(), '..'))
     saving_path += '/results/augmenter'
