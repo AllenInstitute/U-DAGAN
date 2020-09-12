@@ -39,7 +39,6 @@ def train_udagan(parameters, device):
 
     # Loss functions
     criterionD = nn.BCELoss()
-    criterionQ_con = NormalNLLLoss()
     mseDist = nn.MSELoss()
 
     # Set Adam optimiser for discriminator and augmenter
@@ -109,8 +108,11 @@ def train_udagan(parameters, device):
                 # Loss value for the augmenter
                 A_loss = parameters['lambda'][0] * gen_loss + \
                          parameters['lambda'][1] * triplet_loss + \
-                         parameters['lambda'][2] * mseDist(qz1, qz2) + \
+                         parameters['lambda'][2] * KL_dist(qz1, qz2) + \
                          parameters['lambda'][3] * recon_loss
+
+                # parameters['lambda'][2] * mseDist(qz1, qz2)
+
                 A_loss.backward()
                 optimA.step()
 

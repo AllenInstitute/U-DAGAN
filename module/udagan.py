@@ -25,9 +25,11 @@ class Augmenter_mnist(nn.Module):
                                bias=False)
         self.bn4 = nn.BatchNorm2d(self.conv4.out_channels)
 
-        self.conv_s = nn.Conv2d(self.conv4.out_channels, latent_dim, 1,
+        self.mean_s = nn.Conv2d(self.conv4.out_channels, latent_dim, 1,
                                 bias=False)
-        self.bn_s = nn.BatchNorm2d(self.conv_s.out_channels)
+        self.bn_s = nn.BatchNorm2d(self.mean_s.out_channels)
+        self.sigma_s = nn.Conv2d(self.conv4.out_channels, latent_dim, 1,
+                                bias=False)
 
         self.tconv0 = nn.ConvTranspose2d(latent_dim, 128, 1, 1, bias=False)
         self.tbn0 = nn.BatchNorm2d(self.tconv0.out_channels)
@@ -58,13 +60,19 @@ class Augmenter_mnist(nn.Module):
         x = torch.cat((x.squeeze(), z), dim=1)
         x = x.unsqueeze(-1).unsqueeze(-1)
         x = F.leaky_relu(self.bn4(self.conv4(x)), 0.1, inplace=True)
-        s = self.bn_s(self.conv_s(x))
+        mu = self.bn_s(self.mean_s(x))
+        sigma = torch.sigmoid(self.sigma_s(x))
+        s = reparam_trick(mu, sigma)
         x = F.relu(self.tbn0(self.tconv0(s)))
         x = F.relu(self.tbn1(self.tconv1(x)))
         x = F.relu(self.tbn2(self.tconv2(x)))
         x = F.relu(self.tbn3(self.tconv3(x)))
 
-        return s.squeeze(), torch.sigmoid(self.tconv4(x))
+        dist = []
+        dist.append(mu.squeeze())
+        dist.append(sigma.squeeze())
+
+        return dist, torch.sigmoid(self.tconv4(x))
 
 class Generator_mnist(nn.Module):
     def __init__(self, latent_dim):
@@ -223,7 +231,7 @@ class Augmenter_facs(nn.Module):
 
 class Generator_facs(nn.Module):
     def __init__(self, latent_dim, input_dim=5000, n_dim=500,
-                 p_drop=0.0):
+                 p_drop=0.5):
         super().__init__()
 
         moment = 0.01
@@ -286,18 +294,18 @@ class Generator_facs(nn.Module):
         mu = self.batch_fc_mu(self.fc_mu(x))
         sigma = torch.sigmoid(self.fc_sigma(x))
         s = reparam_trick(mu, sigma)
-        x = F.relu((self.fc6(s)))
-        x = F.relu((self.fc7(x)))
-        x = F.relu((self.fc8(x)))
-        x = F.relu((self.fc9(x)))
-        x = F.relu((self.fc10(x)))
+        x = F.relu(self.batch_fc6(self.fc6(s)))
+        x = F.relu(self.batch_fc7(self.fc7(x)))
+        x = F.relu(self.batch_fc8(self.fc8(x)))
+        x = F.relu(self.batch_fc9(self.fc9(x)))
+        x = F.relu(self.batch_fc10(self.fc10(x)))
 
         return s, F.relu(self.fc11(x))
 
 
 
 class Discriminator_facs(nn.Module):
-    def __init__(self, input_dim=5000, n_dim=500, p_drop=0.0):
+    def __init__(self, input_dim=5000, n_dim=500, p_drop=0.5):
         super().__init__()
 
         moment = 0.01

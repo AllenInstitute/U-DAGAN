@@ -17,20 +17,14 @@ def weights_init(m):
         nn.init.constant_(m.bias.data, 0)
 
 
-class NormalNLLLoss:
+def KL_dist(x1, x2):
     """
-    Calculate the negative log likelihood
-    of normal distribution.
-    This needs to be minimised
-
-    Treating Q(cj | x) as a factored Gaussian
+    Calculate the KL divergence between two univariate Gaussians
     """
-    def __call__(self, x, mu, var):
-        
-        logli = -0.5 * (var.mul(2 * np.pi) + eps).log() - (x - mu).pow(2).div(
-            var.mul(2.0) + eps)
-        nll = -(logli.sum(1).mean())
-        return nll
+    logli = ((x2[1] + eps)/(x1[1] + eps)).log() + \
+    (x1[1] + (x1[0] - x2[0]).pow(2)).div(x2[1].mul(2.0) + eps) - 0.5
+    nll = (logli.sum(1).mean())
+    return nll
 
 
 def TripletLoss(anchor, positive, negative, margin=0.2, loss='BCE'):
