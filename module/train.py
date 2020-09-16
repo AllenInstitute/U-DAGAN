@@ -93,6 +93,9 @@ def train_udagan(parameters, device):
                 # Updating the augmenter ---------------------------------------
                 optimA.zero_grad()
                 # Augmented data treated as real data
+                noise = torch.randn(b_size, parameters['num_n'], device=device)
+                noise += 0.1 * torch.sign(noise)
+                qz1, fake_data1 = netA(real_data, noise)
                 z1, probs_fake1 = netD(fake_data1)
                 z2, probs_fake2 = netD(fake_data2)
                 # z0, _ = netD(real_data)
@@ -217,9 +220,10 @@ def train_udagan(parameters, device):
             'optimD': optimD.state_dict(),
             'optimA': optimA.state_dict(),
             'parameters': parameters
-            }, saving_path + 'model_bs_%d_dn_%d_dz_%d_lambda'
+            }, saving_path + 'model_bs_%d_dn_%d_dz_%d_l1_%f_l2_%f_l3_%f_l4_%f'
                %(parameters['batch_size'], parameters['num_n'], parameters[
-            'num_z']))
+            'num_z'], parameters['lambda'][0],  parameters['lambda'][1],
+                 parameters['lambda'][2],  parameters['lambda'][3]))
 
         # Plot the training losses.
         plt.figure()

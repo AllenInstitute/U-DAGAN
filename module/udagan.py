@@ -53,7 +53,7 @@ class Augmenter_mnist(nn.Module):
 
     def forward(self, x, z):
 
-        z = F.elu(self.bnz(self.noise(z)))
+        z = F.elu((self.noise(z)))
         x = F.leaky_relu(self.conv1(x), 0.1, inplace=True)
         x = F.leaky_relu(self.bn2(self.conv2(x)), 0.1, inplace=True)
         x = F.leaky_relu(self.bn3(self.conv3(x)), 0.1, inplace=True)
